@@ -1,4 +1,0 @@
-interface:
-  display_name: "Seaavey Go SDK"
-  short_description: "Implement Seaavey Go SDK changes safely"
-  default_prompt: "Use $seaavey-go-sdk to add or update downloader endpoints in the Seaavey Go SDK."
