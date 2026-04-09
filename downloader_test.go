@@ -194,6 +194,80 @@ func TestDownloaderTikTokValidatesTargetURL(t *testing.T) {
 	}
 }
 
+func TestDownloaderFacebookRequestAndResponse(t *testing.T) {
+	t.Parallel()
+
+	client := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			t.Fatalf("expected method %s, got %s", http.MethodGet, r.Method)
+		}
+
+		if r.URL.Path != "/downloader/facebook" {
+			t.Fatalf("expected path /downloader/facebook, got %s", r.URL.Path)
+		}
+
+		if got := r.URL.Query().Get("url"); got != "https://www.facebook.com/example/video/123" {
+			t.Fatalf("expected query url to be set, got %q", got)
+		}
+
+		if got := r.Header.Get("X-API-KEY"); got != "test-key" {
+			t.Fatalf("expected X-API-KEY header, got %q", got)
+		}
+
+		if got := r.Header.Get("Accept"); got != "application/json" {
+			t.Fatalf("expected Accept header, got %q", got)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"status":200,"success":true,"latency":"1811 ms","data":{"title":"Facebook","downloads":[{"quality":"360P","url":"https://cdn.example/video-360p.mp4"},{"quality":"1080P","url":"https://cdn.example/video-1080p.mp4"}]}}`)) //nolint:lll
+	})
+
+	resp, err := client.Downloader.Facebook(context.Background(), "https://www.facebook.com/example/video/123")
+	if err != nil {
+		t.Fatalf("Facebook() error = %v", err)
+	}
+
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+
+	if resp.Status != http.StatusOK {
+		t.Fatalf("expected status 200, got %d", resp.Status)
+	}
+
+	if !resp.Success {
+		t.Fatal("expected success to be true")
+	}
+
+	if resp.Latency != "1811 ms" {
+		t.Fatalf("expected latency to be parsed, got %q", resp.Latency)
+	}
+
+	if resp.Data.Title != "Facebook" {
+		t.Fatalf("expected data.title to be parsed, got %q", resp.Data.Title)
+	}
+
+	if len(resp.Data.Downloads) != 2 {
+		t.Fatalf("expected 2 downloads, got %d", len(resp.Data.Downloads))
+	}
+
+	if resp.Data.Downloads[0].Quality != "360P" {
+		t.Fatalf("expected first download quality to be 360P, got %q", resp.Data.Downloads[0].Quality)
+	}
+
+	if resp.Data.Downloads[0].URL != "https://cdn.example/video-360p.mp4" {
+		t.Fatalf("expected first download URL to be parsed, got %q", resp.Data.Downloads[0].URL)
+	}
+
+	if resp.Data.Downloads[1].Quality != "1080P" {
+		t.Fatalf("expected second download quality to be 1080P, got %q", resp.Data.Downloads[1].Quality)
+	}
+
+	if resp.Data.Downloads[1].URL != "https://cdn.example/video-1080p.mp4" {
+		t.Fatalf("expected second download URL to be parsed, got %q", resp.Data.Downloads[1].URL)
+	}
+}
+
 func TestDownloaderSoundCloudRequestAndResponse(t *testing.T) {
 	t.Parallel()
 

@@ -67,3 +67,13 @@ func (s *DownloaderService) SoundCloud(ctx context.Context, targetURL string) (*
 
 	return &out, nil
 }
+
+// Facebook calls the Facebook downloader endpoint.
+func (s *DownloaderService) Facebook(ctx context.Context, targetURL string) (*FacebookResponse, error) {
+	var out FacebookResponse
+	if err := s.getInto(ctx, "facebook", targetURL, &out); err != nil {
+		return nil, err
+	}
+
+	return &out, nil
+}

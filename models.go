@@ -124,3 +124,21 @@ type SoundCloudData struct {
 	Download     string                `json:"download,omitempty"`
 	Alternatives []DownloadAlternative `json:"alternatives,omitempty"`
 }
+
+// FacebookResponse is the typed response from /downloader/facebook.
+type FacebookResponse struct {
+	ResponseMeta
+	Data FacebookData `json:"data"`
+}
+
+// FacebookData contains media fields for Facebook downloader output.
+type FacebookData struct {
+	Title     string             `json:"title,omitempty"`
+	Downloads []FacebookDownload `json:"downloads,omitempty"`
+}
+
+// FacebookDownload contains download information with quality and URL.
+type FacebookDownload struct {
+	Quality string `json:"quality,omitempty"`
+	URL     string `json:"url,omitempty"`
+}

@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-const defaultBaseURL = "https://api.seaavey.com"
-
 // Client is the root Seaavey API client.
 type Client struct {
 	apiKey     string
@@ -21,7 +19,7 @@ type Client struct {
 
 // NewClient creates a new Seaavey API client.
 func NewClient(apiKey string) *Client {
-	baseURL, _ := url.Parse(defaultBaseURL)
+	baseURL, _ := url.Parse("https://api.seaavey.com")
 
 	c := &Client{
 		apiKey:  strings.TrimSpace(apiKey),
